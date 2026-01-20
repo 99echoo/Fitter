@@ -1,0 +1,76 @@
+{
+  "items": [
+    {
+      "id": "item_001",
+      "name": "오버핏 데님 자켓",
+      "category": "아우터",
+      "image_url": "/images/clothing/jacket_001.png",
+      "brand": "Sample Brand",
+      "price": 89000,
+      "description": "클래식한 데님 자켓"
+    },
+    {
+      "id": "item_002",
+      "name": "베이직 화이트 티셔츠",
+      "category": "상의",
+      "image_url": "/images/clothing/tshirt_001.png",
+      "brand": "Sample Brand",
+      "price": 29000,
+      "description": "데일리 필수템 화이트 티"
+    },
+    {
+      "id": "item_003",
+      "name": "슬림핏 블랙 진",
+      "category": "하의",
+      "image_url": "/images/clothing/jeans_001.png",
+      "brand": "Sample Brand",
+      "price": 59000,
+      "description": "스타일리시한 슬림핏 진"
+    },
+    {
+      "id": "item_004",
+      "name": "스트라이프 셔츠",
+      "category": "상의",
+      "image_url": "/images/clothing/shirt_001.png",
+      "brand": "Sample Brand",
+      "price": 49000,
+      "description": "깔끔한 스트라이프 패턴 셔츠"
+    },
+    {
+      "id": "item_005",
+      "name": "롱 플리츠 스커트",
+      "category": "하의",
+      "image_url": "/images/clothing/skirt_001.png",
+      "brand": "Sample Brand",
+      "price": 45000,
+      "description": "우아한 플리츠 스커트"
+    },
+    {
+      "id": "item_006",
+      "name": "레더 바이커 자켓",
+      "category": "아우터",
+      "image_url": "/images/clothing/jacket_002.png",
+      "brand": "Sample Brand",
+      "price": 159000,
+      "description": "클래식 바이커 스타일 레더 자켓"
+    },
+    {
+      "id": "item_007",
+      "name": "플로럴 미디 원피스",
+      "category": "원피스",
+      "image_url": "/images/clothing/dress_001.png",
+      "brand": "Sample Brand",
+      "price": 79000,
+      "description": "로맨틱한 플로럴 프린트 원피스"
+    },
+    {
+      "id": "item_008",
+      "name": "후드 집업 스웻셔츠",
+      "category": "상의",
+      "image_url": "/images/clothing/hoodie_001.png",
+      "brand": "Sample Brand",
+      "price": 65000,
+      "description": "편안한 캐주얼 후드 집업"
+    }
+  ]
+}
