@@ -2,13 +2,16 @@
 
 ## Recent Changes
 - 루트 `/`는 `/musinsa`로 리다이렉트됨 (`frontend/src/app/(site)/page.tsx`).
-- 무신사 헤더에 `/fitting` 이동 CTA 추가 (`frontend/src/components/musinsa/MusinsaHeader.tsx`).
+- 무신사 플로팅 CTA로 `/fitting` 이동 제공 (`frontend/src/components/musinsa/FittingFloatingCTA.tsx`).
 - 피팅 이미지 프리뷰를 `next/image`로 전환 (`frontend/src/components/fitting/*`).
+- 피팅 플로우를 의상 선택 → 얼굴/전신 업로드 2단계로 재구성 (`frontend/src/app/(site)/fitting/page.tsx`).
+- 의상 선택 UI를 카테고리별 가로 스크롤로 변경 (`frontend/src/components/fitting/ClothingSelector.tsx`).
 - Google Fonts `<link>` 로딩 및 폰트 변수 추가 (`frontend/src/app/layout.tsx`, `frontend/src/app/globals.css`).
 - 프론트 빌드가 `next build --webpack` 사용 (`frontend/package.json`).
 
 ## Current Status
 - 무신사 메인 페이지와 피팅 플로우 UI 구현됨 (라우팅: `/`→`/musinsa`, `/fitting`).
+- 피팅 플로우는 의상 선택 후 얼굴/전신 사진 업로드로 진행.
 - 의상 목록/피팅 요청/결과 조회 API는 백엔드에서 제공됨.
 - 데이터셋 확정 전이므로 스키마/API 변경 가능성이 있음.
 

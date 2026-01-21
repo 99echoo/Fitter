@@ -11,7 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Current Status
 
 - 무신사 메인 UI(`/musinsa`)와 피팅 플로우 UI(`/fitting`) 기본 구현됨.
-- 루트 `/`는 `/musinsa`로 리다이렉트되며, 무신사 헤더에 "AI 피팅룸" CTA가 연결됨.
+- 루트 `/`는 `/musinsa`로 리다이렉트되며, 무신사 페이지에 플로팅 CTA로 피팅 진입 제공.
+- 피팅 플로우는 의상 선택 → 얼굴/전신 업로드 2단계로 구성, 카테고리별 가로 스크롤 선택 UI 사용.
 - 데이터셋 확정에 따라 백엔드 스키마/API가 변경될 수 있습니다.
 - 문서는 현재 상태와 목표 방향을 함께 기록합니다.
 - ID는 문자열(opaque)로 취급하며 UUID/코드형 문자열 모두 허용합니다.
@@ -150,7 +151,9 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 - `frontend/src/app/(site)/page.tsx` - 루트(`/`)에서 `/musinsa`로 리다이렉트
 - `frontend/src/app/musinsa/page.tsx` - 무신사 메인 페이지
 - `frontend/src/app/(site)/fitting/page.tsx` - AI 피팅 플로우 진입
+- `frontend/src/components/musinsa/FittingFloatingCTA.tsx` - 무신사 플로팅 CTA
 - `frontend/src/components/fitting/ImageUploader.tsx` - 이미지 업로드 컴포넌트
+- `frontend/src/components/fitting/ClothingSelector.tsx` - 의상 선택(카테고리별 가로 스크롤)
 - `frontend/src/components/fitting/ResultViewer.tsx` - 결과 뷰어 컴포넌트
 
 ## Branch Strategy (GitHub Flow)

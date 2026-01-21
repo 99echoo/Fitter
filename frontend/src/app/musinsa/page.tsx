@@ -2,6 +2,7 @@ import { MusinsaHeader } from "@/components/musinsa/MusinsaHeader";
 import { AnnouncementBar } from "@/components/musinsa/AnnouncementBar";
 import { RankingFilters } from "@/components/musinsa/RankingFilters";
 import { ProductGrid } from "@/components/musinsa/ProductGrid";
+import { FittingFloatingCTA } from "@/components/musinsa/FittingFloatingCTA";
 import type { MusinsaProduct } from "@/data/musinsaProducts";
 import type { ClothingListResponse } from "@/types";
 
@@ -53,6 +54,7 @@ export default async function MusinsaPage() {
         </div>
         <ProductGrid products={products} />
       </main>
+      <FittingFloatingCTA />
     </div>
   );
 }

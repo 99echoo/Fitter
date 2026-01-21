@@ -10,7 +10,7 @@ import { Loading } from "@/components/common/Loading";
 import { apiClient } from "@/lib/api";
 import { Clothing } from "@/types";
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
 
 export default function FittingPage() {
   const router = useRouter();
@@ -64,37 +64,34 @@ export default function FittingPage() {
   const canProceed = () => {
     switch (step) {
       case 1:
-        return faceImage !== null;
-      case 2:
-        return bodyImage !== null;
-      case 3:
         return selectedClothing !== null;
+      case 2:
+        return faceImage !== null && bodyImage !== null;
       default:
         return false;
     }
   };
 
-  const progressValue = ((step - 1) / 2) * 100;
+  const progressValue = ((step - 1) / 1) * 100;
 
   if (isSubmitting) {
     return (
-      <div className="container max-w-4xl mx-auto py-12">
+      <div className="container max-w-3xl mx-auto py-12">
         <Loading message="AI가 피팅 이미지를 생성하고 있습니다..." />
       </div>
     );
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 px-4">
+    <div className="container max-w-3xl mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-4">AI 피팅룸</h1>
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Step {step} / 3</span>
+            <span>Step {step} / 2</span>
             <span>
-              {step === 1 && "얼굴 사진 업로드"}
-              {step === 2 && "전신 사진 업로드"}
-              {step === 3 && "의상 선택"}
+              {step === 1 && "의상 선택"}
+              {step === 2 && "사진 업로드"}
             </span>
           </div>
           <Progress value={progressValue} className="h-2" />
@@ -108,22 +105,6 @@ export default function FittingPage() {
       )}
 
       {step === 1 && (
-        <ImageUploader
-          label="얼굴 사진"
-          description="정면을 바라보는 밝은 조명의 얼굴 사진을 업로드해주세요."
-          onImageSelect={setFaceImage}
-        />
-      )}
-
-      {step === 2 && (
-        <ImageUploader
-          label="전신 사진"
-          description="정면 자세의 전신이 보이는 사진을 업로드해주세요."
-          onImageSelect={setBodyImage}
-        />
-      )}
-
-      {step === 3 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">의상을 선택해주세요</h2>
           {isLoading ? (
@@ -138,6 +119,29 @@ export default function FittingPage() {
         </div>
       )}
 
+      {step === 2 && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold">사진을 업로드해주세요</h2>
+            <p className="text-sm text-muted-foreground">
+              얼굴 사진과 전신 사진을 모두 업로드해야 피팅이 가능합니다.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <ImageUploader
+              label="얼굴 사진"
+              description="정면을 바라보는 밝은 조명의 얼굴 사진을 업로드해주세요."
+              onImageSelect={setFaceImage}
+            />
+            <ImageUploader
+              label="전신 사진"
+              description="정면 자세의 전신이 보이는 사진을 업로드해주세요."
+              onImageSelect={setBodyImage}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between mt-8">
         <Button
           variant="outline"
@@ -147,7 +151,7 @@ export default function FittingPage() {
           이전
         </Button>
 
-        {step < 3 ? (
+        {step < 2 ? (
           <Button
             onClick={() => setStep((prev) => ((prev + 1) as Step))}
             disabled={!canProceed()}

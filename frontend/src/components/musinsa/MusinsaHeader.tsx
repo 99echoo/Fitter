@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 const topNavItems = [
   "MUSINSA",
   "BEAUTY",
@@ -53,12 +51,6 @@ export function MusinsaHeader() {
           </div>
           <div className="flex items-center gap-3 text-neutral-300">
             <span className="hidden sm:inline">오프라인 스토어</span>
-            <Link
-              href="/fitting"
-              className="rounded-full bg-white px-3 py-1 text-[10px] font-semibold text-neutral-900 transition hover:bg-neutral-200"
-            >
-              AI 피팅룸
-            </Link>
             <button type="button" className="flex items-center gap-1">
               <span className="hidden md:inline">검색</span>
               <svg viewBox="0 0 24 24" className="h-4 w-4">
