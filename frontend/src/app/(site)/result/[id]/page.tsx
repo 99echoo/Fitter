@@ -1,12 +1,23 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import Image from "next/image";
+import { useState, useEffect, use, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/api";
 import { TryOnRequest } from "@/types";
+
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(
+  /\/$/,
+  ""
+);
+
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("/")) return `${API_BASE_URL}${url}`;
+  return `${API_BASE_URL}/${url}`;
+};
 
 interface ResultPageProps {
   params: Promise<{ id: string }>;
@@ -17,58 +28,60 @@ export default function ResultPage({ params }: ResultPageProps) {
   const { id } = use(params);
   const [result, setResult] = useState<TryOnRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isVideoLoading, setIsVideoLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasShownVideoErrorToast = useRef(false);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let isActive = true;
+
     const fetchResult = async () => {
       try {
         const data = await apiClient.getResult(id);
+        if (!isActive) return;
         setResult(data);
 
-        if (data.status === "processing" || data.status === "pending") {
-          setTimeout(fetchResult, 2000);
+        const isVideoError =
+          !data.video_url &&
+          Boolean(data.error_message) &&
+          data.error_message.startsWith("Video generation failed");
+
+        if (isVideoError && !hasShownVideoErrorToast.current) {
+          hasShownVideoErrorToast.current = true;
+          toast.error("영상 생성 실패", {
+            description: data.error_message,
+          });
+        }
+
+        const shouldPoll =
+          (!data.video_url && (data.status === "processing" || data.status === "pending")) ||
+          (data.status === "completed" && !data.video_url && !isVideoError);
+
+        if (shouldPoll) {
+          timeoutId = setTimeout(fetchResult, 2000);
         }
       } catch {
+        if (!isActive) return;
         setError("결과를 불러오는데 실패했습니다.");
       } finally {
+        if (!isActive) return;
         setIsLoading(false);
       }
     };
 
     fetchResult();
+
+    return () => {
+      isActive = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [id]);
-
-  const handleGenerateVideo = async () => {
-    setIsVideoLoading(true);
-    try {
-      await apiClient.generateVideo(id);
-
-      const pollVideo = async () => {
-        const data = await apiClient.getResult(id);
-        setResult(data);
-
-        if (!data.video_url && data.status !== "failed") {
-          setTimeout(pollVideo, 2000);
-        } else {
-          setIsVideoLoading(false);
-        }
-      };
-
-      pollVideo();
-    } catch {
-      setError("영상 생성에 실패했습니다.");
-      setIsVideoLoading(false);
-    }
-  };
 
   const handleRetry = () => {
     router.push("/fitting");
   };
 
   const handleShare = async () => {
-    if (!result?.result_image_url) return;
-
     try {
       if (navigator.share) {
         await navigator.share({
@@ -100,10 +113,10 @@ export default function ResultPage({ params }: ResultPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white text-black">
-        <div className="mx-auto max-w-md min-h-screen flex flex-col">
-          <div className="flex flex-col min-h-screen">
-            <div className="flex-1 flex items-center justify-center px-2 py-2">
+      <div className="min-h-[90vh] bg-white text-black flex">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
+          <div className="flex flex-1 flex-col min-h-0">
+            <div className="flex items-center justify-center px-2 py-1">
               <div className="relative w-full max-h-[65vh] aspect-[269/482] rounded-lg overflow-hidden flex items-center justify-center">
                 <video
                   className="h-full w-full object-contain"
@@ -116,7 +129,7 @@ export default function ResultPage({ params }: ResultPageProps) {
                 />
               </div>
             </div>
-            <div className="p-4 text-center">
+            <div className="p-2 text-center">
               <p className="text-lg font-semibold uppercase tracking-wide text-black">
                 LOADING YOUR RESULT...
               </p>
@@ -129,8 +142,8 @@ export default function ResultPage({ params }: ResultPageProps) {
 
   if (error || !result) {
     return (
-      <div className="min-h-screen bg-white text-black">
-        <div className="mx-auto max-w-md min-h-screen flex flex-col items-center justify-center px-4">
+      <div className="min-h-[90vh] bg-white text-black flex">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-4 min-h-0 border-x border-neutral-200">
           <p className="text-lg text-center mb-4">
             {error || "결과를 찾을 수 없습니다."}
           </p>
@@ -145,12 +158,20 @@ export default function ResultPage({ params }: ResultPageProps) {
     );
   }
 
-  if (result.status === "processing" || result.status === "pending") {
+  const isVideoError =
+    !result.video_url &&
+    Boolean(result.error_message) &&
+    result.error_message.startsWith("Video generation failed");
+
+  if (
+    (!result.video_url && (result.status === "processing" || result.status === "pending")) ||
+    (result.status === "completed" && !result.video_url && !isVideoError)
+  ) {
     return (
-      <div className="min-h-screen bg-white text-black">
-        <div className="mx-auto max-w-md min-h-screen flex flex-col">
-          <div className="flex flex-col min-h-screen">
-            <div className="flex-1 flex items-center justify-center px-2 py-2">
+      <div className="min-h-[90vh] bg-white text-black flex">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
+          <div className="flex flex-1 flex-col min-h-0">
+            <div className="flex items-center justify-center px-2 py-1">
               <div className="relative w-full max-h-[65vh] aspect-[269/482] rounded-lg overflow-hidden flex items-center justify-center">
                 <video
                   className="h-full w-full object-contain"
@@ -163,7 +184,7 @@ export default function ResultPage({ params }: ResultPageProps) {
                 />
               </div>
             </div>
-            <div className="p-4 text-center">
+            <div className="p-2 text-center">
               <p className="text-lg font-semibold uppercase tracking-wide text-black">
                 CREATING YOUR LOOK...
               </p>
@@ -174,12 +195,12 @@ export default function ResultPage({ params }: ResultPageProps) {
     );
   }
 
-  if (result.status === "failed") {
+  if (result.status === "failed" || isVideoError) {
     return (
-      <div className="min-h-screen bg-white text-black">
-        <div className="mx-auto max-w-md min-h-screen flex flex-col items-center justify-center px-4">
+      <div className="min-h-[90vh] bg-white text-black flex">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-4 min-h-0 border-x border-neutral-200">
           <p className="text-lg text-center mb-4">
-            {result.error_message || "이미지 생성에 실패했습니다."}
+            {result.error_message || "결과 생성에 실패했습니다."}
           </p>
           <button
             onClick={handleRetry}
@@ -193,10 +214,10 @@ export default function ResultPage({ params }: ResultPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <div className="mx-auto max-w-md min-h-screen flex flex-col">
+    <div className="min-h-[90vh] bg-white text-black flex">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
         {/* 헤더 */}
-        <div className="p-4 flex items-center justify-between border-b border-neutral-200">
+        <div className="p-3 flex items-center justify-between border-b border-neutral-200">
           <button
             onClick={() => router.back()}
             className="text-black hover:text-gray-600 transition"
@@ -217,23 +238,25 @@ export default function ResultPage({ params }: ResultPageProps) {
         </div>
 
         {/* 콘텐츠 영역 */}
-        <div className="flex-1 px-4 pt-4 overflow-y-auto">
-          {result.result_image_url && (
+        <div className="flex-1 min-h-0 px-3 pt-3 overflow-y-auto">
+          {result.video_url && (
             <div className="relative w-full aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden">
-              <Image
-                src={result.result_image_url}
-                alt="피팅 결과"
-                fill
-                sizes="100vw"
-                className="object-cover"
-                unoptimized
+              <video
+                className="h-full w-full object-contain"
+                src={resolveMediaUrl(result.video_url)}
+                controls
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
               />
             </div>
           )}
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-4 py-2 border-t border-neutral-200">
+        <div className="px-3 py-2 border-t border-neutral-200">
           <button
             onClick={handleAddToCart}
             className="w-full border-2 border-black text-black py-3 font-medium tracking-wider uppercase hover:bg-black hover:text-white transition"

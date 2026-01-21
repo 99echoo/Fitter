@@ -21,6 +21,7 @@ export function ImageUploader({
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const inputId = `upload-${label}`;
 
   const handleFile = useCallback(
     (file: File) => {
@@ -76,6 +77,7 @@ export function ImageUploader({
       if (file) {
         handleFile(file);
       }
+      e.target.value = "";
     },
     [handleFile]
   );
@@ -86,7 +88,7 @@ export function ImageUploader({
       <p className="text-sm text-gray-500 mb-4">{description}</p>
 
       <div
-        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-3 transition-colors ${
           isDragging
             ? "border-black bg-neutral-200"
             : "border-neutral-300 hover:border-neutral-400"
@@ -95,9 +97,9 @@ export function ImageUploader({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
-        {preview ? (
-          <div className="space-y-4">
-            <div className="relative h-40 w-full">
+        <div className="relative h-48 w-full">
+          {preview ? (
+            <>
               <Image
                 src={preview}
                 alt="Preview"
@@ -106,35 +108,35 @@ export function ImageUploader({
                 className="object-contain rounded-lg"
                 unoptimized
               />
-            </div>
-            <button
-              onClick={() => setPreview(null)}
-              className="px-4 py-2 text-sm border border-neutral-300 rounded text-black hover:bg-neutral-200 transition"
+            <label
+              htmlFor={inputId}
+              className="absolute bottom-3 right-3 px-3 py-1.5 text-xs border border-neutral-300 rounded text-black hover:bg-neutral-200 transition cursor-pointer bg-white/90"
             >
               다시 선택
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="text-3xl">📷</div>
-            <p className="text-sm text-gray-500">
-              이미지를 드래그하거나 클릭하여 업로드
-            </p>
-            <input
-              type="file"
-              accept={acceptedFormats}
-              onChange={handleInputChange}
-              className="hidden"
-              id={`upload-${label}`}
-            />
-            <label
-              htmlFor={`upload-${label}`}
-              className="inline-block px-4 py-2 text-sm border border-neutral-300 rounded text-black hover:bg-neutral-200 transition cursor-pointer"
-            >
-              파일 선택
             </label>
-          </div>
-        )}
+            </>
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-center">
+              <div className="text-3xl">📷</div>
+              <p className="text-sm text-gray-500">
+                이미지를 드래그하거나 클릭하여 업로드
+              </p>
+              <label
+                htmlFor={inputId}
+                className="inline-block px-4 py-2 text-sm border border-neutral-300 rounded text-black hover:bg-neutral-200 transition cursor-pointer"
+              >
+                파일 선택
+              </label>
+            </div>
+          )}
+          <input
+            type="file"
+            accept={acceptedFormats}
+            onChange={handleInputChange}
+            className="hidden"
+            id={inputId}
+          />
+        </div>
       </div>
 
       {error && <p className="text-sm text-red-500 mt-2">{error}</p>}

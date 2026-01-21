@@ -22,7 +22,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap"
         />
       </head>
-      <body className="antialiased min-h-screen flex flex-col">
+      <body className="antialiased min-h-[90vh] flex flex-col">
         {children}
       </body>
     </html>

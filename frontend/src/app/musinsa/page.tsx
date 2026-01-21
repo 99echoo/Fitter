@@ -38,9 +38,9 @@ export default async function MusinsaPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900">
+    <div className="min-h-[90vh] bg-white text-neutral-900">
       <MusinsaHeader />
-      <main className="mx-auto w-full max-w-[1300px] px-4 pb-16">
+      <main className="mx-auto w-full max-w-[1300px] px-4 pb-16 border-x border-neutral-200">
         <AnnouncementBar />
         <RankingFilters />
         <div className="mt-4 flex items-center justify-between text-xs text-neutral-500">

@@ -80,11 +80,11 @@ export default function FittingPage() {
   // 대기 화면
   if (isSubmitting) {
     return (
-      <div className="min-h-screen bg-white text-black">
-        <div className="mx-auto max-w-md min-h-screen flex flex-col">
-          <div className="flex flex-col min-h-screen">
+      <div className="min-h-[90vh] bg-white text-black flex">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
+          <div className="flex flex-1 flex-col min-h-0">
             {/* 비디오 영역 */}
-            <div className="flex-1 flex items-center justify-center px-2 py-2">
+            <div className="flex items-center justify-center px-2 py-1">
               <div className="relative w-full max-h-[65vh] aspect-[269/482] rounded-lg overflow-hidden flex items-center justify-center">
                 <video
                   className="h-full w-full object-contain"
@@ -99,7 +99,7 @@ export default function FittingPage() {
             </div>
 
             {/* 하단 텍스트 */}
-            <div className="p-4 text-center">
+            <div className="p-2 text-center">
               <p className="text-lg font-semibold uppercase tracking-wide text-black">
                 READY! THAT'S ALL THE PHOTOS
               </p>
@@ -111,13 +111,13 @@ export default function FittingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      <div className="mx-auto max-w-md min-h-screen flex flex-col">
+    <div className="min-h-[90vh] bg-white text-black flex">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
         {/* Step 0: 시작 화면 */}
         {step === 0 && (
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-1 flex-col min-h-0">
             {/* 시작 화면 비디오 */}
-            <div className="flex-1 flex items-center justify-center px-2 py-2 relative">
+            <div className="flex items-center justify-center px-2 py-1 relative">
               <button
                 onClick={() => router.back()}
                 className="absolute top-4 left-4 z-10 text-white hover:text-gray-300 transition bg-black/30 rounded-full p-2"
@@ -139,7 +139,7 @@ export default function FittingPage() {
             </div>
 
             {/* 하단 영역 */}
-            <div className="px-4 py-2 space-y-3 text-center">
+            <div className="px-3 py-2 space-y-3 text-center">
               <p className="text-sm uppercase tracking-wide leading-relaxed text-gray-600">
                 사진이 밝고 선명한지, 혼자 찍은 사진인지 확인해주세요.
                 <br />
@@ -163,9 +163,9 @@ export default function FittingPage() {
 
         {/* Step 1: 의상 선택 */}
         {step === 1 && (
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-1 flex-col min-h-0">
             {/* 콘텐츠 */}
-            <div className="flex-1 px-4 overflow-y-auto">
+            <div className="flex-1 min-h-0 px-4 overflow-y-auto">
               <div className="pt-6 pb-4">
                 <div className="flex items-center gap-3 mb-2">
                   <button
@@ -209,9 +209,9 @@ export default function FittingPage() {
 
         {/* Step 2: 사진 업로드 */}
         {step === 2 && (
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-1 flex-col min-h-0">
             {/* 콘텐츠 */}
-            <div className="flex-1 px-4 overflow-y-auto">
+            <div className="flex-1 min-h-0 px-4 overflow-y-auto">
               <div className="pt-6 pb-4">
                 <div className="flex items-center gap-3 mb-2">
                   <button
