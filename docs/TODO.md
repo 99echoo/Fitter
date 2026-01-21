@@ -4,27 +4,66 @@
 - 루트 `/`는 `/musinsa`로 리다이렉트됨 (`frontend/src/app/(site)/page.tsx`).
 - 무신사 플로팅 CTA로 `/fitting` 이동 제공 (`frontend/src/components/musinsa/FittingFloatingCTA.tsx`).
 - 피팅 이미지 프리뷰를 `next/image`로 전환 (`frontend/src/components/fitting/*`).
-- 피팅 플로우를 의상 선택 → 얼굴/전신 업로드 2단계로 재구성 (`frontend/src/app/(site)/fitting/page.tsx`).
+- 피팅 플로우를 시작 화면 → 의상 선택 → 사진 업로드로 재구성 (`frontend/src/app/(site)/fitting/page.tsx`).
 - 의상 선택 UI를 카테고리별 가로 스크롤로 변경 (`frontend/src/components/fitting/ClothingSelector.tsx`).
 - Google Fonts `<link>` 로딩 및 폰트 변수 추가 (`frontend/src/app/layout.tsx`, `frontend/src/app/globals.css`).
 - 프론트 빌드가 `next build --webpack` 사용 (`frontend/package.json`).
+- Nano Banana 서비스에 이미지 경로/URL 해석 및 응답 검증 로직 보강 (`backend/app/services/nano_banana.py`).
+- Nano Banana 기본 모델을 `gemini-3-pro-image-preview`로 변경하고 환경변수로 분리 (`backend/app/config.py`, `backend/app/services/nano_banana.py`).
 
 ## Current Status
 - 무신사 메인 페이지와 피팅 플로우 UI 구현됨 (라우팅: `/`→`/musinsa`, `/fitting`).
-- 피팅 플로우는 의상 선택 후 얼굴/전신 사진 업로드로 진행.
+- 피팅 플로우: 시작 화면 → 의상 선택 → 얼굴/전신 사진 업로드 → 대기 → 결과.
 - 의상 목록/피팅 요청/결과 조회 API는 백엔드에서 제공됨.
+- AI 연동 서비스(Nano Banana/Kling) 코드가 있으나 실제 API 키 연동/결과 저장 검증은 미확인.
 - 데이터셋 확정 전이므로 스키마/API 변경 가능성이 있음.
 
 ## Scope / Non-scope (Today)
-- Scope: 메인 라우팅/CTA 동작 확인, 피팅 플로우 UI 확인, 실패 케이스 UX 보강.
-- Non-scope: 백엔드 스키마 수정, AI 모델 튜닝, 배포 작업.
+- Scope: AI 모델 연동 계획 수립, try-on/video API 흐름 점검, 업로드/결과 URL 규칙 정리.
+- Non-scope: 백엔드 스키마 대규모 변경, UI 리디자인, 배포 작업.
 
 ## Risks / Unknowns
 - `next dev`가 중복 실행되면 `.next/dev/lock` 에러 발생.
-- `/api/clothing` 실패 시 무신사 페이지가 에러로 중단됨.
-- `next/image`가 `unoptimized`로 동작 중이라 최적화 정책 재검토 필요.
+- Nano Banana/Kling API 요청 스펙과 응답 포맷이 실제로 검증되지 않음.
+- 로컬 파일 경로(`/uploads`)와 원격 URL 처리 방식이 혼재됨.
 
 ## Next Tasks
+- [TASK-101] Nano Banana Pro 연동 검증 및 이미지 파이프라인 정리
+  - 목표: try-on 요청이 실제 API 호출로 이미지 생성되고 결과 URL이 접근 가능하도록 정리
+  - 대상: `backend/app/services/nano_banana.py`, `backend/app/routers/try_on.py`, `backend/app/utils/file_handler.py`, `backend/app/config.py`
+  - 작업:
+    - [ ] google-genai 요청/응답 형식 확인 및 에러 처리 보강
+    - [ ] 로컬 파일/원격 URL 경로 처리 일관화(`/uploads` 포함)
+    - [ ] 실패 시 status/error_message 업데이트 및 재시도 정책 결정
+  - 완료 조건(DoD):
+    - try-on 1건 성공, `result_image_url`로 이미지 접근 확인
+  - 테스트 힌트:
+    - `cd backend && poetry run uvicorn app.main:app --reload`
+
+- [TASK-102] Kling AI 영상 생성 연동 검증 및 폴링 정리
+  - 목표: 생성된 이미지로 영상 생성이 성공하고 결과 페이지에서 재생 가능하도록 보강
+  - 대상: `backend/app/services/kling_ai.py`, `backend/app/routers/video.py`, `frontend/src/app/(site)/result/[id]/page.tsx`, `frontend/src/components/fitting/ResultViewer.tsx`
+  - 작업:
+    - [ ] Kling API 요청 스펙 확인(모델 ID, base64/URL 방식)
+    - [ ] 폴링 종료 조건 및 실패 처리 정리
+    - [ ] `video_url` 저장 후 프론트 재생 확인
+  - 완료 조건(DoD):
+    - `/api/generate-video` 호출 후 결과 페이지에서 영상 재생 가능
+  - 테스트 힌트:
+    - `/result/:id`에서 영상 생성 버튼 클릭
+
+- [TASK-103] AI 연동 환경/스토리지/URL 규칙 정리
+  - 목표: API 키/업로드 경로/결과 URL 규칙을 문서와 코드에서 일관되게 유지
+  - 대상: `.env.example`, `backend/app/config.py`, `backend/app/main.py`, `frontend/src/lib/api.ts`
+  - 작업:
+    - [ ] `.env` 키/설명 및 기본값 점검
+    - [ ] 업로드/결과 URL 생성 규칙 문서화(상대/절대 처리)
+    - [ ] 프론트에서 상대 URL 처리 기준 정리
+  - 완료 조건(DoD):
+    - 로컬에서 업로드/결과 URL 접근 가능, 규칙이 문서에 반영됨
+  - 테스트 힌트:
+    - 업로드 후 `/uploads/...` 직접 접근
+
 - [TASK-001] 메인 라우팅 & CTA 확인
   - 목표: `/` 진입 시 `/musinsa` 노출, CTA 클릭 시 `/fitting` 이동
   - 대상: `frontend/src/app/(site)/page.tsx`, `frontend/src/components/musinsa/MusinsaHeader.tsx`

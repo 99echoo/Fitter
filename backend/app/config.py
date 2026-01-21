@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # AI API Keys
     google_api_key: str = ""
     kling_api_key: str = ""
+    google_image_model: str = "gemini-3-pro-image-preview"
 
     # Server
     backend_host: str = "0.0.0.0"
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 @lru_cache

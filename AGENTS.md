@@ -10,12 +10,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current Status
 
-- 무신사 메인 UI(`/musinsa`)와 피팅 플로우 UI(`/fitting`) 기본 구현됨.
+- 무신사 메인 UI(`/musinsa`)와 피팅 플로우 UI(`/fitting`) 구현됨.
 - 루트 `/`는 `/musinsa`로 리다이렉트되며, 무신사 페이지에 플로팅 CTA로 피팅 진입 제공.
-- 피팅 플로우는 의상 선택 → 얼굴/전신 업로드 2단계로 구성, 카테고리별 가로 스크롤 선택 UI 사용.
+- 피팅 플로우: 시작 화면 → 의상 선택(카테고리별 가로 스크롤) → 사진 업로드(얼굴/전신) → 대기 화면 → 결과 페이지
 - 데이터셋 확정에 따라 백엔드 스키마/API가 변경될 수 있습니다.
 - 문서는 현재 상태와 목표 방향을 함께 기록합니다.
 - ID는 문자열(opaque)로 취급하며 UUID/코드형 문자열 모두 허용합니다.
+
+## Fitting UI 디자인 가이드
+
+### 플로우
+1. 시작 화면 (모델 이미지 + START 버튼)
+2. 의상 선택 (상의/하의/아우터 카테고리)
+3. 사진 업로드 (얼굴 + 전신)
+4. 결과 대기 화면
+5. 결과 페이지
+
+### 디자인 컨셉
+- 다크 테마 (검은 배경, `bg-black`)
+- 모바일 레이아웃 (`max-w-sm`, 좁은 너비)
+- 피팅 내부 헤더는 X 버튼으로 닫기
+- Geist 폰트 사용 (전체 웹페이지와 일관성)
 
 ## Tech Stack
 
@@ -108,7 +123,7 @@ poetry run alembic revision --autogenerate -m "description"
 ## AI Integration
 
 ### Nano Banana Pro (Virtual Try-On)
-- 모델: `gemini-2.0-flash-exp-image-generation` (현재 기준, 데이터셋/정책에 따라 변경 가능)
+- 모델: `gemini-3-pro-image-preview` (기본값, `GOOGLE_IMAGE_MODEL`로 변경 가능)
 - SDK: `google-genai`
 - 입력: 얼굴 사진 + 전신 사진 + 의상 이미지
 - 출력: 1024x1024 합성 이미지
@@ -124,6 +139,7 @@ poetry run alembic revision --autogenerate -m "description"
 # Backend (root .env)
 DATABASE_URL=postgresql://fitter:fitter_password@localhost:5432/fitter
 GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_IMAGE_MODEL=gemini-3-pro-image-preview
 KLING_API_KEY=your_kling_api_key_here
 
 # Frontend (.env.local)
