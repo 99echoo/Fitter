@@ -7,6 +7,7 @@ from typing import Optional
 from google import genai
 from google.genai import types
 import httpx
+import aiofiles
 
 from app.config import settings
 
@@ -76,7 +77,7 @@ Reference images:
             )
         ]
 
-        response = self._generate_content_with_fallback(contents)
+        response = await asyncio.to_thread(self._generate_content_with_fallback, contents)
 
         # Save the generated image
         result_filename = f"result_{uuid.uuid4()}.jpg"
@@ -88,8 +89,8 @@ Reference images:
         if not image_bytes:
             raise RuntimeError("Nano Banana API returned no image data")
 
-        with open(result_path, "wb") as f:
-            f.write(image_bytes)
+        async with aiofiles.open(result_path, "wb") as f:
+            await f.write(image_bytes)
 
         return f"/uploads/results/{result_filename}"
 

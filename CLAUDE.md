@@ -46,7 +46,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - SQLAlchemy + Alembic
 
 ### AI/ML
-- Google Nano Banana Pro (이미지 생성/편집)
+- OpenAI GPT-Image 1.5 (이미지 생성/편집)
 - Kling AI 2.1 (Image-to-Video)
 
 ## Project Structure
@@ -122,11 +122,11 @@ poetry run alembic revision --autogenerate -m "description"
 
 ## AI Integration
 
-### Nano Banana Pro (Virtual Try-On)
-- 모델: `gemini-3-pro-image-preview` (기본값, `GOOGLE_IMAGE_MODEL`로 변경 가능)
-- SDK: `google-genai`
-- 입력: 얼굴 사진 + 전신 사진 + 의상 이미지
-- 출력: 1024x1024 합성 이미지
+### OpenAI GPT-Image 1.5 (Virtual Try-On)
+- 모델: `gpt-image-1.5` (기본값, `OPENAI_IMAGE_MODEL`로 변경 가능)
+- SDK: `openai`
+- 입력: 얼굴 사진 + 전신 사진 + 의상 이미지 (최대 5장)
+- 출력: 1024x1024 합성 이미지 (base64 디코딩 후 저장)
 
 ### Kling AI (360도 영상)
 - 모델: Kling 2.1 (Image-to-Video)
@@ -138,8 +138,10 @@ poetry run alembic revision --autogenerate -m "description"
 ```env
 # Backend (root .env)
 DATABASE_URL=postgresql://fitter:fitter_password@localhost:5432/fitter
-GOOGLE_API_KEY=your_google_api_key_here
-GOOGLE_IMAGE_MODEL=gemini-3-pro-image-preview
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_IMAGE_MODEL=gpt-image-1.5
+OPENAI_ORG_ID=your_openai_org_id_here
+OPENAI_PROJECT_ID=your_openai_project_id_here
 KLING_API_KEY=your_kling_api_key_here
 
 # Frontend (.env.local)
@@ -162,7 +164,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ## Key Files
 
-- `backend/app/services/nano_banana.py` - Nano Banana Pro API 연동
+- `backend/app/services/openai_image.py` - OpenAI GPT-Image API 연동
 - `backend/app/services/kling_ai.py` - Kling AI API 연동
 - `frontend/src/app/(site)/page.tsx` - 루트(`/`)에서 `/musinsa`로 리다이렉트
 - `frontend/src/app/musinsa/page.tsx` - 무신사 메인 페이지
@@ -196,5 +198,5 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 ## Related Documentation
 
 - [PRD (Product Requirements Document)](docs/PRD.md)
-- [Google Nano Banana Pro Docs](https://ai.google.dev/gemini-api/docs/image-generation)
+- [OpenAI Images API Docs](https://platform.openai.com/docs/api-reference/images)
 - [Kling AI API Docs](https://app.klingai.com/global/dev/document-api)

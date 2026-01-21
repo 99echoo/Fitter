@@ -7,7 +7,7 @@ from typing import Optional
 from sqlalchemy import delete
 
 from app.database import SessionLocal
-from app.models import Clothing
+from app.models import Clothing, TryOnRequest
 
 CATEGORIES = {"상의", "하의", "아우터", "원피스", "기타"}
 
@@ -55,6 +55,7 @@ def main() -> int:
     session = SessionLocal()
     try:
         if args.truncate:
+            session.execute(delete(TryOnRequest))
             session.execute(delete(Clothing))
 
         for row in rows:

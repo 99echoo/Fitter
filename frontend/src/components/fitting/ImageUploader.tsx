@@ -2,8 +2,6 @@
 
 import { useCallback, useState } from "react";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 interface ImageUploaderProps {
   label: string;
@@ -83,66 +81,63 @@ export function ImageUploader({
   );
 
   return (
-    <Card className="w-full">
-      <CardContent className="p-6">
-        <h3 className="font-semibold mb-2">{label}</h3>
-        <p className="text-sm text-muted-foreground mb-4">{description}</p>
+    <div className="w-full bg-neutral-100 rounded-lg p-4">
+      <h3 className="font-semibold text-black mb-1">{label}</h3>
+      <p className="text-sm text-gray-500 mb-4">{description}</p>
 
-        <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            isDragging
-              ? "border-primary bg-primary/5"
-              : "border-muted-foreground/25 hover:border-primary/50"
-          }`}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          {preview ? (
-            <div className="space-y-4">
-              <div className="relative h-48 w-full max-w-sm mx-auto">
-                <Image
-                  src={preview}
-                  alt="Preview"
-                  fill
-                  sizes="(min-width: 640px) 24rem, 100vw"
-                  className="object-contain rounded-lg"
-                  unoptimized
-                />
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setPreview(null);
-                }}
-              >
-                다시 선택
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="text-4xl">📷</div>
-              <p className="text-sm text-muted-foreground">
-                이미지를 드래그하거나 클릭하여 업로드하세요
-              </p>
-              <input
-                type="file"
-                accept={acceptedFormats}
-                onChange={handleInputChange}
-                className="hidden"
-                id={`upload-${label}`}
+      <div
+        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+          isDragging
+            ? "border-black bg-neutral-200"
+            : "border-neutral-300 hover:border-neutral-400"
+        }`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
+        {preview ? (
+          <div className="space-y-4">
+            <div className="relative h-40 w-full">
+              <Image
+                src={preview}
+                alt="Preview"
+                fill
+                sizes="100vw"
+                className="object-contain rounded-lg"
+                unoptimized
               />
-              <Button asChild variant="outline">
-                <label htmlFor={`upload-${label}`} className="cursor-pointer">
-                  파일 선택
-                </label>
-              </Button>
             </div>
-          )}
-        </div>
+            <button
+              onClick={() => setPreview(null)}
+              className="px-4 py-2 text-sm border border-neutral-300 rounded text-black hover:bg-neutral-200 transition"
+            >
+              다시 선택
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="text-3xl">📷</div>
+            <p className="text-sm text-gray-500">
+              이미지를 드래그하거나 클릭하여 업로드
+            </p>
+            <input
+              type="file"
+              accept={acceptedFormats}
+              onChange={handleInputChange}
+              className="hidden"
+              id={`upload-${label}`}
+            />
+            <label
+              htmlFor={`upload-${label}`}
+              className="inline-block px-4 py-2 text-sm border border-neutral-300 rounded text-black hover:bg-neutral-200 transition cursor-pointer"
+            >
+              파일 선택
+            </label>
+          </div>
+        )}
+      </div>
 
-        {error && <p className="text-sm text-destructive mt-2">{error}</p>}
-      </CardContent>
-    </Card>
+      {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+    </div>
   );
 }

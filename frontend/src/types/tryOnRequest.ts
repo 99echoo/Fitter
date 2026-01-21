@@ -1,8 +1,17 @@
+import { ClothingCategory } from "./clothing";
+
 export type TryOnStatus = "pending" | "processing" | "completed" | "failed";
+
+export interface ClothingItemReference {
+  id: string;
+  category: ClothingCategory;
+  name?: string;
+}
 
 export interface TryOnRequest {
   id: string;
   clothing_id: string;
+  clothing_items?: ClothingItemReference[];
   face_image_path: string;
   body_image_path: string;
   status: TryOnStatus;
@@ -17,6 +26,7 @@ export interface TryOnResponse {
   request_id: string;
   status: TryOnStatus;
   result_image_url?: string;
+  clothing_items?: ClothingItemReference[];
   created_at: string;
 }
 

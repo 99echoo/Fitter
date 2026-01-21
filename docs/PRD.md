@@ -50,8 +50,8 @@
 - 5-10개 샘플 의상 제공
 
 #### F4. AI 가상 착용 이미지 생성
-- Google Nano Banana Pro 모델 활용
-- 입력: 얼굴 사진 + 전신 사진 + 의상 이미지
+- OpenAI GPT-Image 1.5 모델 활용
+- 입력: 얼굴 사진 + 전신 사진 + 의상 이미지 (최대 5장)
 - 출력: 사용자가 해당 옷을 입은 합성 이미지
 - 해상도: 1024x1024
 - 일관된 정면 포즈 유지
@@ -101,11 +101,11 @@
 ### 3.3 AI/ML
 | 기술 | 용도 |
 |------|------|
-| Google Nano Banana Pro | 이미지 생성/편집 (Virtual Try-On) |
+| OpenAI GPT-Image 1.5 | 이미지 생성/편집 (Virtual Try-On) |
 | Kling AI 2.1 | Image-to-Video (360도 영상) |
-| google-genai SDK | Nano Banana Pro API 연동 |
+| openai SDK | GPT-Image API 연동 |
 
-- 현재 모델 ID: `gemini-3-pro-image-preview` (환경 변수 `GOOGLE_IMAGE_MODEL`로 변경 가능)
+- 현재 모델 ID: `gpt-image-1.5` (환경 변수 `OPENAI_IMAGE_MODEL`로 변경 가능)
 
 ### 3.4 인프라 (예정)
 | 기술 | 용도 |
@@ -138,7 +138,7 @@
         │               │             │
         ▼               ▼             ▼
 ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
-│ PostgreSQL    │ │ Nano Banana   │ │ Kling AI      │
+│ PostgreSQL    │ │ GPT-Image     │ │ Kling AI      │
 │ Database      │ │ Pro API       │ │ API           │
 └───────────────┘ └───────────────┘ └───────────────┘
         │
@@ -485,7 +485,7 @@ fitter/
 
 ## 10. AI 프롬프트 설계
 
-### 10.1 Nano Banana Pro - Virtual Try-On 프롬프트
+### 10.1 OpenAI GPT-Image 1.5 - Virtual Try-On 프롬프트
 
 ```
 You are a professional fashion photographer. Generate a photo of the person
@@ -545,7 +545,7 @@ Create a smooth 360-degree rotation video of this person.
 
 | 순서 | 작업 | 상세 내용 |
 |------|------|----------|
-| 1 | Nano Banana Pro 연동 | API 키 설정, SDK 설치, 테스트 |
+| 1 | OpenAI GPT-Image 연동 | API 키 설정, SDK 설치, 테스트 |
 | 2 | 이미지 업로드 기능 | 프론트엔드 업로더 + 백엔드 핸들러 |
 | 3 | Try-On 로직 구현 | 프롬프트 설계, 이미지 합성 파이프라인 |
 | 4 | 프론트-백엔드 연동 | API 호출, 결과 표시 |
@@ -600,7 +600,7 @@ Create a smooth 360-degree rotation video of this person.
 
 | 리스크 | 영향 | 대응 방안 |
 |--------|------|----------|
-| Nano Banana Pro API 품질 불안정 | 높음 | 프롬프트 튜닝, 여러 번 시도 후 최적 결과 선택 |
+| GPT-Image API 품질 편차 | 높음 | 프롬프트 튜닝, 여러 번 시도 후 최적 결과 선택 |
 | Kling AI API 접근 제한 | 중간 | 서드파티(Replicate, PiAPI) 활용 또는 사전 생성 영상 사용 |
 | 3일 내 완성 불가 | 높음 | 영상 기능 우선순위 낮춤, 이미지 합성에 집중 |
 | 합성 품질 저하 | 중간 | 후처리(얼굴 블렌딩, 해상도 업스케일) 적용 |
@@ -640,7 +640,7 @@ Create a smooth 360-degree rotation video of this person.
 
 ## 16. 참고 자료
 
-- [Google Nano Banana Pro 공식 문서](https://ai.google.dev/gemini-api/docs/image-generation)
+- [OpenAI Images API Docs](https://platform.openai.com/docs/api-reference/images)
 - [Kling AI 개발자 문서](https://app.klingai.com/global/dev/document-api)
 - [무신사 AI 포토부스 사례](https://blog.google/technology/ai/nano-banana-pro/)
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Clothing, TryOnRequest
 from app.schemas import TryOnRequestResponse, TryOnResultResponse
-from app.services.nano_banana import NanoBananaService
+from app.services.openai_image import OpenAIImageService, ClothingReference
 from app.utils.file_handler import save_upload_file
 
 router = APIRouter(prefix="/api", tags=["try-on"])
@@ -16,13 +16,50 @@ async def create_try_on(
     background_tasks: BackgroundTasks,
     face_image: UploadFile = File(...),
     body_image: UploadFile = File(...),
-    clothing_id: str = Form(...),
+    clothing_ids: list[str] = Form(...),
     db: Session = Depends(get_db),
 ):
-    # Validate clothing exists
-    clothing = db.query(Clothing).filter(Clothing.id == clothing_id).first()
-    if not clothing:
+    requested_ids = [clothing_ids] if isinstance(clothing_ids, str) else clothing_ids
+
+    normalized_ids: list[str] = []
+    seen: set[str] = set()
+    for item_id in requested_ids:
+        if not item_id or item_id in seen:
+            continue
+        seen.add(item_id)
+        normalized_ids.append(item_id)
+
+    if not normalized_ids:
+        raise HTTPException(status_code=400, detail="At least one clothing_id is required")
+
+    clothing_items = db.query(Clothing).filter(Clothing.id.in_(normalized_ids)).all()
+    clothing_by_id = {str(item.id): item for item in clothing_items}
+    missing_ids = [item_id for item_id in normalized_ids if item_id not in clothing_by_id]
+    if missing_ids:
         raise HTTPException(status_code=404, detail="Clothing not found")
+
+    ordered_items = [clothing_by_id[item_id] for item_id in normalized_ids]
+    seen_categories: set[str] = set()
+    for item in ordered_items:
+        if item.category in seen_categories:
+            raise HTTPException(
+                status_code=400,
+                detail="Only one clothing item per category is allowed",
+            )
+        seen_categories.add(item.category)
+
+    clothing_refs = [
+        ClothingReference(
+            path=item.image_url,
+            category=item.category,
+            name=item.name,
+        )
+        for item in ordered_items
+    ]
+    clothing_payload = [
+        {"id": str(item.id), "category": item.category, "name": item.name}
+        for item in ordered_items
+    ]
 
     # Save uploaded files
     face_path = await save_upload_file(face_image, "face")
@@ -30,7 +67,8 @@ async def create_try_on(
 
     # Create try-on request
     try_on_request = TryOnRequest(
-        clothing_id=clothing_id,
+        clothing_id=ordered_items[0].id,
+        clothing_items=clothing_payload,
         face_image_path=face_path,
         body_image_path=body_path,
         status="processing",
@@ -45,13 +83,14 @@ async def create_try_on(
         str(try_on_request.id),
         face_path,
         body_path,
-        clothing.image_url,
+        clothing_refs,
     )
 
     return TryOnRequestResponse(
         request_id=try_on_request.id,
         status=try_on_request.status,
         result_image_url=try_on_request.result_image_url,
+        clothing_items=try_on_request.clothing_items,
         created_at=try_on_request.created_at,
     )
 
@@ -68,6 +107,7 @@ def get_result(request_id: str, db: Session = Depends(get_db)):
         result_image_url=try_on_request.result_image_url,
         video_url=try_on_request.video_url,
         error_message=try_on_request.error_message,
+        clothing_items=try_on_request.clothing_items,
         created_at=try_on_request.created_at,
         completed_at=try_on_request.completed_at,
     )
@@ -77,15 +117,15 @@ async def process_try_on(
     request_id: str,
     face_path: str,
     body_path: str,
-    clothing_url: str,
+    clothing_refs: list[ClothingReference],
 ):
     from app.database import SessionLocal
     from datetime import datetime
 
     db = SessionLocal()
     try:
-        service = NanoBananaService()
-        result_url = await service.generate_try_on(face_path, body_path, clothing_url)
+        service = OpenAIImageService()
+        result_url = await service.generate_try_on(face_path, body_path, clothing_refs)
 
         try_on_request = db.query(TryOnRequest).filter(TryOnRequest.id == request_id).first()
         if try_on_request:

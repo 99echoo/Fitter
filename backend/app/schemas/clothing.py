@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Literal, Optional
 from uuid import UUID
 
@@ -20,7 +20,14 @@ class ClothingCreate(ClothingBase):
 
 
 class ClothingResponse(ClothingBase):
-    id: UUID
+    id: str
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def normalize_id(cls, value):
+        if isinstance(value, UUID):
+            return str(value)
+        return value
 
     class Config:
         from_attributes = True

@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -14,8 +16,10 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Ensure tables exist for local/dev usage.
-Base.metadata.create_all(bind=engine)
+# Ensure tables exist for local/dev usage unless tests skip init.
+_skip_db_init = os.getenv("FITTER_SKIP_DB_INIT", "").lower() in {"1", "true", "yes"}
+if not _skip_db_init:
+    Base.metadata.create_all(bind=engine)
 
 # CORS
 app.add_middleware(

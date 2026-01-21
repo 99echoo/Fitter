@@ -1,5 +1,12 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_ENV_FILES = [
+    _REPO_ROOT / ".env",
+    _REPO_ROOT / "backend" / ".env",
+]
 
 
 class Settings(BaseSettings):
@@ -7,9 +14,26 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://fitter:fitter_password@localhost:5432/fitter"
 
     # AI API Keys
-    google_api_key: str = ""
+    openai_api_key: str = ""
+    openai_organization: str = ""
+    openai_project: str = ""
     kling_api_key: str = ""
-    google_image_model: str = "gemini-3-pro-image-preview"
+    kling_access_key: str = ""
+    kling_secret_key: str = ""
+    openai_image_model: str = "gpt-image-1.5"
+    openai_image_max_side: int = 1536
+    openai_image_max_mb: int = 10
+    openai_image_jpeg_quality: int = 85
+    openai_image_force_jpeg: bool = True
+    openai_image_output_size: str = "1024x1536"
+    openai_image_output_format: str = "png"
+    openai_image_quality: str = "auto"
+    openai_image_n: int = 1
+    openai_image_max_inputs: int = 5
+    kling_base_url: str = "https://api-singapore.klingai.com"
+    kling_model_name: str = "kling-v1"
+    kling_mode: str = "pro"
+    kling_duration: str = "5"
 
     # Server
     backend_host: str = "0.0.0.0"
@@ -28,7 +52,7 @@ class Settings(BaseSettings):
         return [origin.strip() for origin in self.cors_origins.split(",")]
 
     class Config:
-        env_file = ".env"
+        env_file = [str(path) for path in _ENV_FILES]
         env_file_encoding = "utf-8"
         extra = "ignore"
 

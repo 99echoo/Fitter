@@ -5,6 +5,7 @@ from app.schemas.clothing import (
     ClothingListResponse,
 )
 from app.schemas.try_on_request import (
+    ClothingItemReference,
     TryOnRequestBase,
     TryOnRequestCreate,
     TryOnRequestResponse,
@@ -18,6 +19,7 @@ __all__ = [
     "ClothingCreate",
     "ClothingResponse",
     "ClothingListResponse",
+    "ClothingItemReference",
     "TryOnRequestBase",
     "TryOnRequestCreate",
     "TryOnRequestResponse",

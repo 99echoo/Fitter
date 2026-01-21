@@ -8,14 +8,14 @@
 - 의상 선택 UI를 카테고리별 가로 스크롤로 변경 (`frontend/src/components/fitting/ClothingSelector.tsx`).
 - Google Fonts `<link>` 로딩 및 폰트 변수 추가 (`frontend/src/app/layout.tsx`, `frontend/src/app/globals.css`).
 - 프론트 빌드가 `next build --webpack` 사용 (`frontend/package.json`).
-- Nano Banana 서비스에 이미지 경로/URL 해석 및 응답 검증 로직 보강 (`backend/app/services/nano_banana.py`).
-- Nano Banana 기본 모델을 `gemini-3-pro-image-preview`로 변경하고 환경변수로 분리 (`backend/app/config.py`, `backend/app/services/nano_banana.py`).
+- OpenAI GPT-Image 서비스에 이미지 경로/URL 해석 및 응답 검증 로직 보강 (`backend/app/services/openai_image.py`).
+- GPT-Image 기본 모델을 `gpt-image-1.5`로 설정하고 환경변수로 분리 (`backend/app/config.py`, `backend/app/services/openai_image.py`).
 
 ## Current Status
 - 무신사 메인 페이지와 피팅 플로우 UI 구현됨 (라우팅: `/`→`/musinsa`, `/fitting`).
 - 피팅 플로우: 시작 화면 → 의상 선택 → 얼굴/전신 사진 업로드 → 대기 → 결과.
 - 의상 목록/피팅 요청/결과 조회 API는 백엔드에서 제공됨.
-- AI 연동 서비스(Nano Banana/Kling) 코드가 있으나 실제 API 키 연동/결과 저장 검증은 미확인.
+- AI 연동 서비스(OpenAI GPT-Image/Kling) 코드가 있으나 실제 API 키 연동/결과 저장 검증은 미확인.
 - 데이터셋 확정 전이므로 스키마/API 변경 가능성이 있음.
 
 ## Scope / Non-scope (Today)
@@ -24,15 +24,15 @@
 
 ## Risks / Unknowns
 - `next dev`가 중복 실행되면 `.next/dev/lock` 에러 발생.
-- Nano Banana/Kling API 요청 스펙과 응답 포맷이 실제로 검증되지 않음.
+- OpenAI GPT-Image/Kling API 요청 스펙과 응답 포맷이 실제로 검증되지 않음.
 - 로컬 파일 경로(`/uploads`)와 원격 URL 처리 방식이 혼재됨.
 
 ## Next Tasks
-- [TASK-101] Nano Banana Pro 연동 검증 및 이미지 파이프라인 정리
+- [TASK-101] OpenAI GPT-Image 연동 검증 및 이미지 파이프라인 정리
   - 목표: try-on 요청이 실제 API 호출로 이미지 생성되고 결과 URL이 접근 가능하도록 정리
-  - 대상: `backend/app/services/nano_banana.py`, `backend/app/routers/try_on.py`, `backend/app/utils/file_handler.py`, `backend/app/config.py`
+  - 대상: `backend/app/services/openai_image.py`, `backend/app/routers/try_on.py`, `backend/app/utils/file_handler.py`, `backend/app/config.py`
   - 작업:
-    - [ ] google-genai 요청/응답 형식 확인 및 에러 처리 보강
+    - [ ] OpenAI Images API 요청/응답 형식 확인 및 에러 처리 보강
     - [ ] 로컬 파일/원격 URL 경로 처리 일관화(`/uploads` 포함)
     - [ ] 실패 시 status/error_message 업데이트 및 재시도 정책 결정
   - 완료 조건(DoD):

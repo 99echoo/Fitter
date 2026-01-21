@@ -1,5 +1,5 @@
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { MusinsaHeader } from "@/components/musinsa/MusinsaHeader";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function SiteLayout({
   children,
@@ -8,9 +8,9 @@ export default function SiteLayout({
 }>) {
   return (
     <>
-      <Header />
+      <MusinsaHeader />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Toaster />
     </>
   );
 }

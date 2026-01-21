@@ -26,7 +26,7 @@ AI 가상 피팅 서비스 PoC (Proof of Concept)
 - SQLAlchemy + Alembic
 
 ### AI/ML
-- Google Nano Banana Pro (이미지 생성/편집)
+- OpenAI GPT-Image 1.5 (이미지 생성/편집)
 - Kling AI 2.1 (Image-to-Video)
 
 ## Getting Started

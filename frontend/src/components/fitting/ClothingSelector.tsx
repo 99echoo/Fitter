@@ -1,81 +1,73 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
 import { Clothing, ClothingCategory } from "@/types";
 
 interface ClothingSelectorProps {
   items: Clothing[];
-  onSelect: (clothing: Clothing) => void;
-  selectedId?: string;
+  onSelect: (clothings: Clothing[]) => void;
+  selectedIds: string[];
 }
 
-const CATEGORIES: ClothingCategory[] = ["상의", "하의", "아우터", "원피스", "기타"];
-const PRICE_FORMATTER = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 2,
-});
+const CATEGORIES: ClothingCategory[] = ["상의", "하의", "아우터"];
 
 export function ClothingSelector({
   items,
   onSelect,
-  selectedId,
+  selectedIds,
 }: ClothingSelectorProps) {
   const groupedItems = CATEGORIES.map((category) => ({
     category,
     items: items.filter((item) => item.category === category),
   })).filter((group) => group.items.length > 0);
 
+  const handleSelect = (item: Clothing) => {
+    const currentSelected = items.filter((i) => selectedIds.includes(i.id));
+    const isSelected = selectedIds.includes(item.id);
+
+    if (isSelected) {
+      onSelect(currentSelected.filter((i) => i.id !== item.id));
+      return;
+    }
+
+    const withoutCategory = currentSelected.filter(
+      (i) => i.category !== item.category
+    );
+    onSelect([...withoutCategory, item]);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {groupedItems.length === 0 && (
-        <p className="text-center text-muted-foreground py-8">
-          해당 카테고리에 상품이 없습니다.
+        <p className="text-center text-gray-500 py-8">
+          상품이 없습니다.
         </p>
       )}
 
       {groupedItems.map((group) => (
-        <section key={group.category} className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">{group.category}</h3>
-            <span className="text-xs text-muted-foreground">
-              {group.items.length}개
-            </span>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
+        <section key={group.category}>
+          <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
             {group.items.map((item) => (
-              <Card
+              <div
                 key={item.id}
-                className={`shrink-0 w-40 sm:w-44 md:w-48 cursor-pointer transition-all hover:shadow-md snap-start ${
-                  selectedId === item.id
-                    ? "ring-2 ring-primary"
-                    : ""
+                className={`shrink-0 w-33 cursor-pointer transition-all snap-start rounded overflow-hidden ${
+                  selectedIds.includes(item.id)
+                    ? "ring-2 ring-black"
+                    : "hover:opacity-80"
                 }`}
-                onClick={() => onSelect(item)}
+                onClick={() => handleSelect(item)}
               >
-                <CardContent className="p-3">
-                  <div className="aspect-square relative mb-2 bg-muted rounded-lg overflow-hidden">
-                    <Image
-                      src={item.image_url}
-                      alt={item.name}
-                      fill
-                      sizes="(min-width: 1024px) 12rem, (min-width: 768px) 11rem, 10rem"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">{item.brand}</p>
-                    <p className="text-sm font-medium line-clamp-2">{item.name}</p>
-                    <p className="text-sm font-bold">
-                      {typeof item.price === "number" && item.price > 0
-                        ? PRICE_FORMATTER.format(item.price)
-                        : "가격 정보 없음"}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                <div className="aspect-[3/4] relative bg-neutral-100">
+                  <Image
+                    src={item.image_url}
+                    alt={item.name}
+                    fill
+                    sizes="9rem"
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              </div>
             ))}
           </div>
         </section>
