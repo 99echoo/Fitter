@@ -13,6 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 무신사 메인 UI(`/musinsa`)와 피팅 플로우 UI(`/fitting`) 구현됨.
 - 루트 `/`는 `/musinsa`로 리다이렉트되며, 무신사 페이지에 플로팅 CTA로 피팅 진입 제공.
 - 피팅 플로우: 시작 화면 → 의상 선택(카테고리별 가로 스크롤) → 사진 업로드(얼굴/전신) → 대기 화면 → 결과 페이지
+- `/api/try-on`은 `clothing_ids`(배열) 기준으로 요청하며, 카테고리 중복 선택은 거부됩니다.
+- 결과 이미지/영상 URL은 `/uploads/...` 상대 경로를 포함하며 프론트에서 `NEXT_PUBLIC_API_URL` 기준으로 해석합니다.
 - 데이터셋 확정에 따라 백엔드 스키마/API가 변경될 수 있습니다.
 - 문서는 현재 상태와 목표 방향을 함께 기록합니다.
 - ID는 문자열(opaque)로 취급하며 UUID/코드형 문자열 모두 허용합니다.
@@ -118,7 +120,7 @@ poetry run alembic revision --autogenerate -m "description"
 - id (string), name, category, image_url, brand, price
 
 ### try_on_request 테이블
-- id (string), clothing_id (string), face_image_path, body_image_path, status, result_image_url, video_url
+- id (string), clothing_id (string), clothing_items (json), face_image_path, body_image_path, status, result_image_url, video_url
 
 ## AI Integration
 
@@ -126,7 +128,7 @@ poetry run alembic revision --autogenerate -m "description"
 - 모델: `gpt-image-1.5` (기본값, `OPENAI_IMAGE_MODEL`로 변경 가능)
 - SDK: `openai`
 - 입력: 얼굴 사진 + 전신 사진 + 의상 이미지 (최대 5장)
-- 출력: 1024x1024 합성 이미지 (base64 디코딩 후 저장)
+- 출력: 1024x1536 합성 이미지 (base64 디코딩 후 저장)
 
 ### Kling AI (360도 영상)
 - 모델: Kling 2.1 (Image-to-Video)
@@ -140,6 +142,7 @@ poetry run alembic revision --autogenerate -m "description"
 DATABASE_URL=postgresql://fitter:fitter_password@localhost:5432/fitter
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_IMAGE_MODEL=gpt-image-1.5
+OPENAI_IMAGE_OUTPUT_SIZE=1024x1536  # 1024x1024|1024x1536|1536x1024|auto
 OPENAI_ORG_ID=your_openai_org_id_here
 OPENAI_PROJECT_ID=your_openai_project_id_here
 KLING_API_KEY=your_kling_api_key_here
@@ -169,10 +172,12 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 - `frontend/src/app/(site)/page.tsx` - 루트(`/`)에서 `/musinsa`로 리다이렉트
 - `frontend/src/app/musinsa/page.tsx` - 무신사 메인 페이지
 - `frontend/src/app/(site)/fitting/page.tsx` - AI 피팅 플로우 진입
+- `frontend/src/app/(site)/result/[id]/page.tsx` - 결과 페이지 (상대 URL 해석 포함)
 - `frontend/src/components/musinsa/FittingFloatingCTA.tsx` - 무신사 플로팅 CTA
 - `frontend/src/components/fitting/ImageUploader.tsx` - 이미지 업로드 컴포넌트
 - `frontend/src/components/fitting/ClothingSelector.tsx` - 의상 선택(카테고리별 가로 스크롤)
 - `frontend/src/components/fitting/ResultViewer.tsx` - 결과 뷰어 컴포넌트
+- `frontend/src/lib/url.ts` - 백엔드 상대 URL 해석 유틸
 
 ## Branch Strategy (GitHub Flow)
 

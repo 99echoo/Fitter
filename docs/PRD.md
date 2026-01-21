@@ -53,7 +53,7 @@
 - OpenAI GPT-Image 1.5 모델 활용
 - 입력: 얼굴 사진 + 전신 사진 + 의상 이미지 (최대 5장)
 - 출력: 사용자가 해당 옷을 입은 합성 이미지
-- 해상도: 1024x1024
+- 해상도: 1024x1536 (기본값, `OPENAI_IMAGE_OUTPUT_SIZE`로 변경 가능)
 - 일관된 정면 포즈 유지
 
 #### F5. 360도 회전 영상 생성
@@ -181,16 +181,22 @@ POST /api/try-on
 Request (multipart/form-data):
 - face_image: File (얼굴 사진)
 - body_image: File (전신 사진)
-- clothing_id: string (의상 ID, opaque)
+- clothing_ids: string[] (의상 ID 배열, opaque)
 
 Response:
 {
   "request_id": "req_abc123",
   "status": "pending" | "processing" | "completed" | "failed",
   "result_image_url": "https://...",
+  "clothing_items": [
+    { "id": "item_001", "category": "상의", "name": "..." }
+  ],
   "created_at": "2026-01-20T12:00:00Z"
 }
 ```
+
+Notes:
+- 카테고리별 1개씩만 선택 가능하며 중복 카테고리는 거부됩니다.
 
 ### 5.3 360도 영상 생성
 ```
@@ -221,7 +227,12 @@ Response:
   "status": "pending" | "processing" | "completed" | "failed",
   "result_image_url": "https://...",
   "video_url": "https://...",
-  "created_at": "2026-01-20T12:00:00Z"
+  "error_message": null,
+  "clothing_items": [
+    { "id": "item_001", "category": "상의", "name": "..." }
+  ],
+  "created_at": "2026-01-20T12:00:00Z",
+  "completed_at": "2026-01-20T12:01:00Z"
 }
 ```
 
@@ -240,7 +251,8 @@ Response:
 │ category (ENUM)     │       │ face_image_path     │
 │ image_url (VARCHAR) │       │ body_image_path     │
 │ brand (VARCHAR)     │       │ status (ENUM)       │
-│ price (INTEGER)     │       │ result_image_url    │
+│ price (INTEGER)     │       │ clothing_items (JSON) │
+│ description (TEXT)  │       │ result_image_url    │
 │ created_at          │       │ video_url           │
 │ updated_at          │       │ error_message       │
 └─────────────────────┘       │ created_at          │
@@ -275,6 +287,7 @@ CREATE INDEX idx_clothing_category ON clothing(category);
 CREATE TABLE try_on_request (
     id VARCHAR(64) PRIMARY KEY,
     clothing_id VARCHAR(64) NOT NULL REFERENCES clothing(id),
+    clothing_items JSON,
     face_image_path VARCHAR(500) NOT NULL,
     body_image_path VARCHAR(500) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'pending'
@@ -320,6 +333,7 @@ class TryOnRequest(Base):
 
     id = Column(String(64), primary_key=True)
     clothing_id = Column(String(64), ForeignKey("clothing.id"), nullable=False)
+    clothing_items = Column(JSON)
     face_image_path = Column(String(500), nullable=False)
     body_image_path = Column(String(500), nullable=False)
     status = Column(String(20), default="pending")  # pending, processing, completed, failed
@@ -351,6 +365,7 @@ interface Clothing {
 interface TryOnRequest {
   id: string;
   clothing_id: string;
+  clothing_items?: { id: string; category: "상의" | "하의" | "아우터" | "원피스" | "기타"; name?: string }[];
   face_image_path: string;
   body_image_path: string;
   status: "pending" | "processing" | "completed" | "failed";
@@ -500,7 +515,7 @@ Requirements:
 - Full body should be visible in the frame
 - Professional studio lighting
 - High quality, realistic result
-- Resolution: 1024x1024
+- Resolution: 1024x1536
 
 Reference images:
 1. Face photo: [face_image]

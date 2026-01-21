@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Clothing, TryOnRequest
 from app.schemas import TryOnRequestResponse, TryOnResultResponse
+from app.services.kling_ai import KlingAIService
 from app.services.openai_image import OpenAIImageService, ClothingReference
 from app.utils.file_handler import save_upload_file
 
@@ -124,13 +125,32 @@ async def process_try_on(
 
     db = SessionLocal()
     try:
-        service = OpenAIImageService()
-        result_url = await service.generate_try_on(face_path, body_path, clothing_refs)
+        image_service = OpenAIImageService()
+        result_url = await image_service.generate_try_on(face_path, body_path, clothing_refs)
+
+        try_on_request = db.query(TryOnRequest).filter(TryOnRequest.id == request_id).first()
+        if not try_on_request:
+            return
+
+        # Save image result first (video generation might take a while)
+        try_on_request.result_image_url = result_url
+        db.commit()
+
+        try:
+            video_service = KlingAIService()
+            video_url = await video_service.generate_360_video(result_url)
+        except Exception as e:
+            try_on_request = db.query(TryOnRequest).filter(TryOnRequest.id == request_id).first()
+            if try_on_request:
+                try_on_request.status = "failed"
+                try_on_request.error_message = f"Video generation failed: {str(e)}"
+                db.commit()
+            return
 
         try_on_request = db.query(TryOnRequest).filter(TryOnRequest.id == request_id).first()
         if try_on_request:
             try_on_request.status = "completed"
-            try_on_request.result_image_url = result_url
+            try_on_request.video_url = video_url
             try_on_request.completed_at = datetime.now()
             db.commit()
     except Exception as e:

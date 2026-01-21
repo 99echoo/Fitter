@@ -9,6 +9,8 @@ AI 가상 피팅 서비스 PoC (Proof of Concept)
 - 무신사 메인 UI(`/musinsa`)와 피팅 플로우 UI(`/fitting`) 기본 구현됨.
 - 루트 `/`는 `/musinsa`로 리다이렉트되며, 무신사 페이지에 플로팅 CTA로 피팅 진입 제공.
 - 피팅 플로우: 시작 화면 → 의상 선택 → 얼굴/전신 업로드 → 대기 → 결과 페이지.
+- `/api/try-on`은 `clothing_ids`(배열) 기준으로 요청하며, 카테고리 중복 선택은 거부됩니다.
+- 결과 이미지/영상 URL은 `/uploads/...` 상대 경로를 포함하며 프론트에서 `NEXT_PUBLIC_API_URL` 기준으로 해석합니다.
 - 데이터셋 확정에 따라 백엔드 스키마/API가 변경될 수 있습니다.
 - 문서는 현재 상태와 목표 방향을 함께 기록합니다.
 
@@ -106,6 +108,7 @@ fitter/
 
 **Notes**
 - ID는 문자열(opaque)이며 UUID 또는 코드형 문자열이 될 수 있습니다.
+- `POST /api/try-on`은 multipart `clothing_ids` 배열을 사용합니다.
 - 이미지/영상 URL은 상대/절대 경로 모두 가능하며, 프론트에서 베이스 URL을 고려해 처리합니다.
 
 ## Branch Strategy
