@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -99,11 +100,16 @@ export function ImageUploader({
         >
           {preview ? (
             <div className="space-y-4">
-              <img
-                src={preview}
-                alt="Preview"
-                className="max-h-48 mx-auto rounded-lg object-contain"
-              />
+              <div className="relative h-48 w-full max-w-sm mx-auto">
+                <Image
+                  src={preview}
+                  alt="Preview"
+                  fill
+                  sizes="(min-width: 640px) 24rem, 100vw"
+                  className="object-contain rounded-lg"
+                  unoptimized
+                />
+              </div>
               <Button
                 variant="outline"
                 onClick={() => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -56,30 +57,39 @@ export function ResultViewer({
               <div className="space-y-2">
                 <p className="text-sm font-medium text-center">Before</p>
                 <div className="aspect-square relative bg-muted rounded-lg overflow-hidden">
-                  <img
+                  <Image
                     src={originalImageUrl}
                     alt="Original"
-                    className="w-full h-full object-contain"
+                    fill
+                    sizes="50vw"
+                    className="object-contain"
+                    unoptimized
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="text-sm font-medium text-center">After</p>
                 <div className="aspect-square relative bg-muted rounded-lg overflow-hidden">
-                  <img
+                  <Image
                     src={resultImageUrl}
                     alt="Result"
-                    className="w-full h-full object-contain"
+                    fill
+                    sizes="50vw"
+                    className="object-contain"
+                    unoptimized
                   />
                 </div>
               </div>
             </div>
           ) : (
             <div className="aspect-square relative bg-muted rounded-lg overflow-hidden max-w-lg mx-auto">
-              <img
+              <Image
                 src={resultImageUrl}
                 alt="Result"
-                className="w-full h-full object-contain"
+                fill
+                sizes="(min-width: 1024px) 32rem, 100vw"
+                className="object-contain"
+                unoptimized
               />
             </div>
           )}

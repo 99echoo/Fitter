@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clothing, ClothingCategory } from "@/types";
 
@@ -70,10 +71,13 @@ export function ClothingSelector({
           >
             <CardContent className="p-3">
               <div className="aspect-square relative mb-2 bg-muted rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={item.image_url}
                   alt={item.name}
-                  className="object-cover w-full h-full"
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                  className="object-cover"
+                  unoptimized
                 />
               </div>
               <div className="space-y-1">
