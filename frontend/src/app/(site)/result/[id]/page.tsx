@@ -115,7 +115,7 @@ export default function ResultPage({ params }: ResultPageProps) {
     return (
       <div className="min-h-[90vh] bg-white text-black flex">
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
-          <div className="flex flex-1 flex-col min-h-0">
+          <div className="flex flex-1 flex-col min-h-0 pt-[50px]">
             <div className="flex items-center justify-center px-2 py-1">
               <div className="relative w-full max-h-[65vh] aspect-[269/482] rounded-lg overflow-hidden flex items-center justify-center">
                 <video
@@ -170,7 +170,7 @@ export default function ResultPage({ params }: ResultPageProps) {
     return (
       <div className="min-h-[90vh] bg-white text-black flex">
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col min-h-0 border-x border-neutral-200">
-          <div className="flex flex-1 flex-col min-h-0">
+          <div className="flex flex-1 flex-col min-h-0 pt-[50px]">
             <div className="flex items-center justify-center px-2 py-1">
               <div className="relative w-full max-h-[65vh] aspect-[269/482] rounded-lg overflow-hidden flex items-center justify-center">
                 <video
