@@ -64,7 +64,7 @@ cp .env.example .env
 
 ### Step 2: Add API Keys
 
-Edit `/Users/dh/Desktop/Fitter/.env`:
+Edit `.env`:
 
 ```env
 # OpenAI GPT-Image API
@@ -72,6 +72,9 @@ OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_IMAGE_MODEL=gpt-image-1.5
 
 # Optional (multiple orgs/projects)
+# Both names are supported:
+# - OPENAI_ORG_ID / OPENAI_PROJECT_ID
+# - OPENAI_ORGANIZATION / OPENAI_PROJECT
 OPENAI_ORG_ID=your_openai_org_id_here
 OPENAI_PROJECT_ID=your_openai_project_id_here
 

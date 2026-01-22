@@ -101,7 +101,7 @@ export default function FittingPage() {
             {/* 하단 텍스트 */}
             <div className="p-2 text-center">
               <p className="text-lg font-semibold uppercase tracking-wide text-black">
-                READY! THAT'S ALL THE PHOTOS
+                READY! THAT&apos;S ALL THE PHOTOS
               </p>
             </div>
           </div>

@@ -43,7 +43,7 @@ export default function ResultPage({ params }: ResultPageProps) {
 
         const isVideoError =
           !data.video_url &&
-          Boolean(data.error_message) &&
+          typeof data.error_message === "string" &&
           data.error_message.startsWith("Video generation failed");
 
         if (isVideoError && !hasShownVideoErrorToast.current) {
@@ -160,7 +160,7 @@ export default function ResultPage({ params }: ResultPageProps) {
 
   const isVideoError =
     !result.video_url &&
-    Boolean(result.error_message) &&
+    typeof result.error_message === "string" &&
     result.error_message.startsWith("Video generation failed");
 
   if (

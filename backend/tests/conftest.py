@@ -5,9 +5,8 @@ import os
 import pytest
 import asyncio
 from pathlib import Path
-from typing import AsyncGenerator, Generator
+from typing import Generator
 from unittest.mock import Mock, AsyncMock
-import tempfile
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine

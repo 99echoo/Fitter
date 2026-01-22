@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Literal, Optional
 from uuid import UUID
 
@@ -21,6 +21,7 @@ class ClothingCreate(ClothingBase):
 
 class ClothingResponse(ClothingBase):
     id: str
+    model_config = ConfigDict(from_attributes=True)
 
     @field_validator("id", mode="before")
     @classmethod
@@ -28,9 +29,6 @@ class ClothingResponse(ClothingBase):
         if isinstance(value, UUID):
             return str(value)
         return value
-
-    class Config:
-        from_attributes = True
 
 
 class ClothingListResponse(BaseModel):

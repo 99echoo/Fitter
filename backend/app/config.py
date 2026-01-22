@@ -1,5 +1,6 @@
 from pathlib import Path
-from pydantic_settings import BaseSettings
+from pydantic import AliasChoices, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -10,13 +11,25 @@ _ENV_FILES = [
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=[str(path) for path in _ENV_FILES],
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
     # Database
     database_url: str = "postgresql://fitter:fitter_password@localhost:5432/fitter"
 
     # AI API Keys
     openai_api_key: str = ""
-    openai_organization: str = ""
-    openai_project: str = ""
+    openai_organization: str = Field(
+        default="",
+        validation_alias=AliasChoices("OPENAI_ORG_ID", "OPENAI_ORGANIZATION"),
+    )
+    openai_project: str = Field(
+        default="",
+        validation_alias=AliasChoices("OPENAI_PROJECT_ID", "OPENAI_PROJECT"),
+    )
     kling_api_key: str = ""
     kling_access_key: str = ""
     kling_secret_key: str = ""
@@ -50,11 +63,6 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",")]
-
-    class Config:
-        env_file = [str(path) for path in _ENV_FILES]
-        env_file_encoding = "utf-8"
-        extra = "ignore"
 
 
 @lru_cache

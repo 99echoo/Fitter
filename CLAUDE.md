@@ -29,9 +29,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 5. 결과 페이지
 
 ### 디자인 컨셉
-- 다크 테마 (검은 배경, `bg-black`)
-- 모바일 레이아웃 (`max-w-sm`, 좁은 너비)
-- 피팅 내부 헤더는 X 버튼으로 닫기
+- 라이트 테마 (흰 배경, `bg-white`)
+- 모바일 레이아웃 (`max-w-md`, 좁은 너비)
+- 피팅 내부 헤더는 뒤로/닫기 버튼 제공 (현재 `<ChevronLeft />` 사용)
 - Geist 폰트 사용 (전체 웹페이지와 일관성)
 
 ## Tech Stack
@@ -49,7 +49,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### AI/ML
 - OpenAI GPT-Image 1.5 (이미지 생성/편집)
-- Kling AI 2.1 (Image-to-Video)
+- Kling AI (Image-to-Video, 모델은 `KLING_MODEL_NAME`로 설정)
 
 ## Project Structure
 
@@ -143,9 +143,14 @@ DATABASE_URL=postgresql://fitter:fitter_password@localhost:5432/fitter
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_IMAGE_MODEL=gpt-image-1.5
 OPENAI_IMAGE_OUTPUT_SIZE=1024x1536  # 1024x1024|1024x1536|1536x1024|auto
+# Optional (지원되는 키: OPENAI_ORG_ID/OPENAI_PROJECT_ID 또는 OPENAI_ORGANIZATION/OPENAI_PROJECT)
 OPENAI_ORG_ID=your_openai_org_id_here
 OPENAI_PROJECT_ID=your_openai_project_id_here
-KLING_API_KEY=your_kling_api_key_here
+
+KLING_ACCESS_KEY=your_kling_access_key_here
+KLING_SECRET_KEY=your_kling_secret_key_here
+# Optional fallback (legacy)
+KLING_API_KEY=your_kling_access_key_here
 
 # Frontend (.env.local)
 NEXT_PUBLIC_API_URL=http://localhost:8000

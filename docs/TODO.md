@@ -8,12 +8,15 @@
 - 의상 선택 UI를 카테고리별 가로 스크롤로 변경 (`frontend/src/components/fitting/ClothingSelector.tsx`).
 - Google Fonts `<link>` 로딩 및 폰트 변수 추가 (`frontend/src/app/layout.tsx`, `frontend/src/app/globals.css`).
 - 프론트 빌드가 `next build --webpack` 사용 (`frontend/package.json`).
+- 프론트 lint/build 실패 원인 2건 수정 (`frontend/src/app/(site)/fitting/page.tsx`, `frontend/src/app/(site)/result/[id]/page.tsx`).
 - OpenAI GPT-Image 서비스에 이미지 경로/URL 해석 및 응답 검증 로직 보강 (`backend/app/services/openai_image.py`).
 - GPT-Image 기본 모델을 `gpt-image-1.5`로 설정하고 환경변수로 분리 (`backend/app/config.py`, `backend/app/services/openai_image.py`).
 - `/api/try-on` 입력을 `clothing_ids` 배열로 정리하고 카테고리 중복을 차단 (`backend/app/routers/try_on.py`).
 - 결과 이미지/영상 상대 URL을 프론트에서 베이스 URL로 해석하도록 유틸 추가 (`frontend/src/lib/url.ts`, `frontend/src/app/(site)/result/[id]/page.tsx`).
 - try_on_request에 `clothing_items` JSON 컬럼 추가 (alembic migration).
 - OpenAI 이미지 출력 기본 사이즈를 1024x1536으로 변경 (`backend/app/config.py`, `docs/API_SETUP.md`).
+- `.env.example` 추가 및 문서/환경변수 정합성 보강 (`.env.example`, `docs/API_SETUP.md`, `backend/app/config.py`).
+- backend `requires-python` 스펙 수정으로 ruff 실행 가능 상태로 정리 (`backend/pyproject.toml`).
 
 ## Current Status
 - 무신사 메인 페이지와 피팅 플로우 UI 구현됨 (라우팅: `/`→`/musinsa`, `/fitting`).
@@ -33,6 +36,7 @@
 - 로컬 파일 경로(`/uploads`)와 원격 URL 처리 방식이 혼재됨.
 - 결과 페이지에서 이미지가 표시되지 않는 케이스가 보고됨 (베이스 URL/캐시/재시작 여부 확인 필요).
 - `.env`에 실제 키가 포함되어 있을 가능성 있음 (비밀정보 회수/샘플 분리 필요).
+- backend 포맷터(black) 미적용 파일이 있어 스타일이 일관되지 않을 수 있음.
 
 ## Next Tasks
 - [TASK-104] 결과 페이지 이미지 표시 이슈 재현/해결
@@ -124,3 +128,27 @@
     - 백엔드 미기동 시에도 안내 UI 표시
   - 테스트 힌트:
     - 백엔드 중지 후 `/musinsa` 진입
+
+- [TASK-106] Backend 포맷터/린터 정리
+  - 목표: black/ruff를 CI에서 안정적으로 돌릴 수 있도록 코드 스타일/설정 정리
+  - 대상: `backend/app/**`, `backend/tests/**`, `backend/pyproject.toml`
+  - 작업:
+    - [ ] `cd backend && poetry run black app tests` 적용
+    - [ ] 필요 시 ruff 규칙/ignore를 `backend/pyproject.toml`에 명시
+  - 완료 조건(DoD):
+    - `cd backend && poetry run ruff check app tests` 통과
+    - `cd backend && poetry run black --check app tests` 통과
+  - 테스트 힌트:
+    - 위 명령들
+
+- [TASK-107] NanoBanana(실험 코드) 정리
+  - 목표: 사용하지 않는/의존성 누락 상태의 서비스 코드 정리(삭제/격리/완성 중 선택)
+  - 대상: `backend/app/services/nano_banana.py`, `backend/pyproject.toml`, `docs/*`
+  - 작업:
+    - [ ] NanoBanana 사용 여부 결정
+    - [ ] 사용 안 하면 제거 또는 `experimental/`로 이동 + 문서에 비범위 명시
+    - [ ] 사용하면 의존성/환경변수 추가 및 라우터 연결
+  - 완료 조건(DoD):
+    - 코드베이스에 "사용 불가한 서비스" 없음
+  - 테스트 힌트:
+    - `cd backend && poetry run pytest`

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Literal, Optional
 from datetime import datetime
 from uuid import UUID
@@ -35,6 +35,7 @@ class TryOnRequestResponse(BaseModel):
     result_image_url: Optional[str] = None
     clothing_items: Optional[list[ClothingItemReference]] = None
     created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
     @field_validator("request_id", mode="before")
     @classmethod
@@ -42,9 +43,6 @@ class TryOnRequestResponse(BaseModel):
         if isinstance(value, UUID):
             return str(value)
         return value
-
-    class Config:
-        from_attributes = True
 
 
 class TryOnResultResponse(BaseModel):
@@ -56,6 +54,7 @@ class TryOnResultResponse(BaseModel):
     clothing_items: Optional[list[ClothingItemReference]] = None
     created_at: datetime
     completed_at: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
 
     @field_validator("request_id", mode="before")
     @classmethod
@@ -63,9 +62,6 @@ class TryOnResultResponse(BaseModel):
         if isinstance(value, UUID):
             return str(value)
         return value
-
-    class Config:
-        from_attributes = True
 
 
 class VideoGenerateRequest(BaseModel):

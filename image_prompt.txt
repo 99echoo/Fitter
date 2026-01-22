@@ -1,0 +1,25 @@
+You are a professional fashion photographer. Generate a photo
+of the person
+wearing the provided clothing item.
+
+Requirements:
+- Keep the person's face exactly as shown in the face reference image
+- Use the body proportions from the full-body reference image
+- Replace the clothing with the provided garment image(s)
+- Apply each clothing image according to its category (top, bottom, outerwear, dress)
+- Maintain a consistent pose: standing straight, front-facing, arms naturally at sides
+- Use a clean, neutral background (white or light gray)
+- Head-to-toe full body in frame: include the entire head and both feet
+- No cropping: ensure feet are fully visible with a small margin below the shoes
+- Professional studio lighting
+- High quality, realistic result
+- Resolution: {self.output_size}
+
+(if len(clothing_items) > 1)  - Use all clothing reference images to capture accurate details
+(if include_model_shot)       - Use the model reference shot for styling cues, but keep the user's face and body
+
+Reference images:
+1. Face photo: [Attached as image 1]
+2. Full body photo: [Attached as image 2]
+3+. {category_label} item {category_index} ({clothing.name}): [Attached as image {image_index}]
+(+ optional) Model reference shot: [Attached as image {image_index}]
